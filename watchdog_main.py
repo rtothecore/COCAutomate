@@ -69,7 +69,7 @@ class Watcher:
         print ("{cwd}".format(cwd = os.getcwd()))
         print ("====================================")
 
-    # func (2)
+    # func (2) 작업 시작
     def run(self):
         self.event_handler = Handler() # 이벤트 핸들러 객체 생성
         self.observer.schedule(
@@ -86,8 +86,15 @@ class Watcher:
             print ("감시 중지...")
             self.observer.stop() # 감시 중단
 
+    # func (3) 작업 정지
+    def stop(self):
+        print ("감시 중지...")
+        self.observer.stop()
+
 # myWatcher = Watcher(r"C:/Users/user/Desktop/AutomateProject/Order_Folder/NEW")
+'''
 property_manager.readProperties()       # 설정파일 읽기
 watchPath = property_manager.glPropWatchPath
 myWatcher = Watcher(watchPath)
 myWatcher.run()
+'''

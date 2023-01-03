@@ -151,6 +151,12 @@
       <height>41</height>
      </rect>
     </property>
+    <property name="font">
+     <font>
+      <weight>75</weight>
+      <bold>true</bold>
+     </font>
+    </property>
     <property name="text">
      <string>실행</string>
     </property>
@@ -165,7 +171,7 @@
      </rect>
     </property>
     <property name="plainText">
-     <string>작업 폴더 감시 중...</string>
+     <string>실행 대기 중...</string>
     </property>
    </widget>
   </widget>

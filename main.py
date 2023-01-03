@@ -1,17 +1,41 @@
 import sys
 from PyQt5.QtWidgets import *
 from PyQt5 import uic
+from PyQt5.QtCore import *
 import property_manager
+import watchdog_main
 
 #UI파일 연결
 #단, UI파일은 Python 코드 파일과 같은 디렉토리에 위치해야한다.
 form_class = uic.loadUiType("ui/automate.ui")[0]
 
-#화면을 띄우는데 사용되는 Class 선언
+# 폴더감시 watchdog 스레드
+class ThreadForWatchdog(QThread):
+    def __init__(self, parent):
+        super().__init__(parent)
+        self.parent = parent
+
+    def run(self):  # 실행
+        self.parent.myWatcher = watchdog_main.Watcher(self.parent.watchPath)  # watchdog_main 생성자 호출
+        self.parent.myWatcher.run()
+
+    def stop(self): # 정지
+        self.parent.myWatcher.stop()
+        self.parent.myWatcher = ''
+
+
+# 화면을 띄우는데 사용되는 Class 선언
 class WindowClass(QMainWindow, form_class) :
     def __init__(self) :
         super().__init__()
         self.setupUi(self)
+        self.runFlag = False        # 폴더감시작업 실행여부 플래그
+        self.threadFW = ''
+
+        property_manager.readProperties()       # 설정파일 읽기
+        self.watchPath = property_manager.glPropWatchPath
+
+        self.myWatcher = ''
 
         # 버튼 시그널 코드
         self.BTN_OCR_PATH.clicked.connect(self.btnOcrPathFunc)
@@ -20,7 +44,7 @@ class WindowClass(QMainWindow, form_class) :
         self.BTN_RUN.clicked.connect(self.btnRunFunc)
 
         # config.ini 파일의 설정값을 읽어서 위젯에 설정
-        property_manager.readProperties()
+        # property_manager.readProperties()
         self.LE_OCR_PATH.setText(property_manager.glPropWatchPath)
         self.LE_MOVE_PATH.setText(property_manager.glPropMovePath)
         self.LE_EXCEL_PATH.setText(property_manager.glPropExcelPath)
@@ -60,6 +84,25 @@ class WindowClass(QMainWindow, form_class) :
             QMessageBox.warning(self, '엑셀파일 설정', '자동입력할 엑셀파일을 설정하세요!')
             return
         print("btn_run clicked!")
+
+        if self.runFlag is False:
+            self.BTN_RUN.setText('정지')
+            self.PTE_STATUS.setPlainText('작업 폴더 감시 중...')
+            self.runWatchdog()
+            self.runFlag = True
+        else:
+            self.BTN_RUN.setText('실행')
+            self.PTE_STATUS.setPlainText('실행 대기 중...')
+            self.stopWatchdog()
+            self.runFlag = False
+
+    def runWatchdog(self):
+        self.threadFW = ThreadForWatchdog(self)
+        self.threadFW.start()
+    
+    def stopWatchdog(self):
+        self.threadFW.stop()
+        
 
 if __name__ == "__main__" :
     #QApplication : 프로그램을 실행시켜주는 클래스

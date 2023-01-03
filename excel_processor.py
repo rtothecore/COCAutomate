@@ -2,6 +2,7 @@ import pandas as pd
 import datetime
 import ocr_data_extractor
 import os.path
+import re
 
 
 def writeToExcel(data, excelPath):
@@ -9,6 +10,7 @@ def writeToExcel(data, excelPath):
     now = datetime.datetime.now()
     today = now.strftime('%Y-%m-%d')
     customNo = ocr_data_extractor.extractData(data, ocr_data_extractor.tolerance_custom_no)
+    customNo = re.sub(r"[^0-9]", "", customNo)  # 고객번호에서 숫자만 남기기
     customName = ocr_data_extractor.extractData(data, ocr_data_extractor.tolerance_custom_name)
 
     raw_data = {'시공서발행일' : [today],

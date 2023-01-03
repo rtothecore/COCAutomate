@@ -149,7 +149,9 @@ for (bbox, text, prob) in results:
  
   # 추출한 영역에 사각형을 그리고 인식한 글자를 표기합니다.
   cv2.rectangle(business_card_image, tl, br, (0, 255, 0), 2)
-  business_card_image = putText(business_card_image, text, tl[0], tl[1] - 60, (0, 255, 0), 50)
+  # business_card_image = putText(business_card_image, text, tl[0], tl[1] - 60, (0, 255, 0), 50)
+  text = '(' + str(tl[0]) + ',' + str(tl[1]) + '), (' + str(br[0]) + ',' + str(br[1]) + ')' 
+  business_card_image = putText(business_card_image, text, tl[0] + 10, tl[1] + 10, (0, 255, 0), 20)
   # cv2.putText(business_card_image, text, (tl[0], tl[1] - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 255, 0), 2)
 
 
